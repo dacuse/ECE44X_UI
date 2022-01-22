@@ -70,7 +70,7 @@ bus.write_byte_data(0x76, 0xF4, 0x27)
 # Select Configuration register, 0xF5(245)
 #		0xA0(00)	Stand_by time = 1000 ms
 bus.write_byte_data(0x76, 0xF5, 0xA0)
-time.sleep(0.5)# BME280 address, 0x76(118)
+time.sleep(0.5) # Disables I2C line to conserve power draw
 # Read data back from 0xF7(247), 8 bytes
 # Pressure MSB, Pressure LSB, Pressure xLSB, Temperature MSB, Temperature LSB
 # Temperature xLSB, Humidity MSB, Humidity LSB
