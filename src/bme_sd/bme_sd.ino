@@ -1,5 +1,5 @@
 /***************************************************************************
-* ECE44x_Firmware: Environmental sensing group's firmware implementing the
+* BME_SD.ino: Environmental sensing group's firmware implementing the
 *   I2C BME280 temperature/humidity sensor as well as SD module for data
 *   logging. 
 * TODO: Add Teros11 soil moisture sensor for data logging
