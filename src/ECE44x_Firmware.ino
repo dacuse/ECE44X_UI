@@ -113,21 +113,27 @@ void sd_log() {
     if (myFile) {
       Serial.print("Writing data");
       
+      // Packet Number
       myFile.print(packet);
       myFile.print(",");
 
+      // Temperature
       myFile.print(temp);
       myFile.print(",");
 
+      // Humidity
       myFile.print(humid);
       myFile.print(",");
 
+      // Pressure
       myFile.print(pressure);
       myFile.print(",");
 
+      // Altitude
       myFile.print(alt);
       myFile.print(",");
 
+      // Electrical Conductivity (reports 0 as dummy data)
       myFile.print(0);
       myFile.println(",");
       
