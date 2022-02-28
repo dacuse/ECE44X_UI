@@ -61,9 +61,9 @@ void loop() {
     degCMean /= NUM_SAMPLES;
 
     // print results
-    //Serial.print("Dielectric: ");
+    Serial.print("Dielectric: ");
     Serial.println(dielectricMean);
-    //Serial.print("Degrees Celsius: ");
+    Serial.print("Degrees Celsius: ");
     Serial.println(degCMean);
 
     bme_measure(bme);
@@ -101,13 +101,13 @@ void bme_measure(Adafruit_BME280 bme) {
     temp = bme.readTemperature();
     humid = bme.readHumidity();
  
-//    Serial.print("Temp:");
+    Serial.print("Temp:");
     Serial.println(temp);
-//    Serial.println("C");
+    Serial.println("C");
 
-//    Serial.print("Humidity=");
+    Serial.print("Humidity=");
     Serial.println(humid);
-//    Serial.println("%");
+    Serial.println("%");
   
 }
 
