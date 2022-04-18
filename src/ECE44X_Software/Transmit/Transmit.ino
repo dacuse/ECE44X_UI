@@ -1,3 +1,4 @@
+// Standard Arduino library
 #include <Arduino.h>
 
 // Teros libraries
@@ -13,19 +14,24 @@
 #include <SPI.h>
 
 // LoRa libraries
-#include <RH_RF95.h>
+#include <RH_RF95.h>  
 
 // Data manipulation
 #include <string>
 #include <cstring>
 
 // Teros data wire
-#define DATAPIN 11         // change to the proper pin
+#define DATAPIN 11
+
+// RTC interrupt pin
+#define CLOCK_INTERRUPT_PIN 12
 
 // LoRa pins
 #define RFM95_CS 8
 #define RFM95_RST 4
 #define RFM95_INT 3
+
+#define SLEEP_TIMER 15      // How long system should sleep in minutes
 
 SDI12 mySDI12(DATAPIN);
 
@@ -35,14 +41,12 @@ float dielectric, temp, humid;
 Adafruit_BME280 bme; // I2C
 File myFile;
 
-// Change to 434.0 or other frequency, must match RX's freq!
 #define RF95_FREQ 915.0
 
 // Singleton instance of the radio driver
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 
-// keeps track of active addresses
-// each bit represents an address:
+// Keeps track of active addresses each bit represents an address:
 // 1 is active (taken), 0 is inactive (available)
 // setTaken('A') will set the proper bit for sensor 'A'
 byte addressRegister[8] = {
@@ -57,7 +61,7 @@ byte addressRegister[8] = {
 };
 
 
-// converts allowable address characters '0'-'9', 'a'-'z', 'A'-'Z',
+// Converts allowable address characters '0'-'9', 'a'-'z', 'A'-'Z',
 // to a decimal number between 0 and 61 (inclusive) to cover the 62 possible addresses
 byte charToDec(char i){
   if((i >= '0') && (i <= '9')) return i - '0';
@@ -66,8 +70,8 @@ byte charToDec(char i){
   else return i;
 }
 
-// gets identification information from a sensor, and prints it to the serial port
-// expects a character between '0'-'9', 'a'-'z', or 'A'-'Z'.
+// Gets identification information from a sensor, and prints it to the serial port
+// Expects a character between '0'-'9', 'a'-'z', or 'A'-'Z'.
 void printInfo(char i){
   int j;
   String command = "";
@@ -218,74 +222,6 @@ void bme_measure() {
   
 }
 
-void setup(){
-  
-  Serial.begin(9600);
-
-  pinMode(RFM95_RST, OUTPUT);
-  digitalWrite(RFM95_RST, HIGH);
-
-  pinMode(5, OUTPUT);
-  digitalWrite(5, LOW); // Sets pin 5, the pin with the 3.3V rail, to output and enables the rail
-  pinMode(6, OUTPUT);
-  digitalWrite(6, HIGH); // Sets pin 6, the pin with the 5V rail, to output and enables the rail
-
-  // manual reset
-  digitalWrite(RFM95_RST, LOW);
-  delay(10);
-  digitalWrite(RFM95_RST, HIGH);
-  delay(10);
-
-  while (!rf95.init()) {
-    Serial.println("LoRa radio init failed");
-    Serial.println("Uncomment '#define SERIAL_DEBUG' in RH_RF95.cpp for detailed debug info");
-    while (1);
-  }
-  Serial.println("LoRa radio init OK!");
-
-  // Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, +13dbM
-  if (!rf95.setFrequency(RF95_FREQ)) {
-    Serial.println("setFrequency failed");
-    while (1);
-  }
-  Serial.print("Set Freq to: "); Serial.println(RF95_FREQ);
-  
-  // Defaults after init are 434.0MHz, 13dBm, Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC on
-
-  // The default transmitter power is 13dBm, using PA_BOOST.
-  // If you are using RFM95/96/97/98 modules which uses the PA_BOOST transmitter pin, then 
-  // you can set transmitter powers from 5 to 23 dBm:
-  rf95.setTxPower(23, false);
-
-  mySDI12.begin();
-  delay(500); // allow things to settle
-
-  Serial.println("Scanning all addresses, please wait...");
-  /*
-      Quickly Scan the Address Space
-   */
-
-  for(byte i = '0'; i <= '9'; i++) if(checkActive(i)) setTaken(i);   // scan address space 0-9
-
-  for(byte i = 'a'; i <= 'z'; i++) if(checkActive(i)) setTaken(i);   // scan address space a-z
-
-  for(byte i = 'A'; i <= 'Z'; i++) if(checkActive(i)) setTaken(i);   // scan address space A-Z
-
-  /*
-      See if there are any active sensors.
-   */
-  boolean found = false;
-
-  for(byte i = 0; i < 62; i++){
-    if(isTaken(i)){
-      found = true;
-      Serial.print("Found address:  ");
-      Serial.println(i);
-      break;
-    }
-  }
-}
-
 void sd_log() {
 
     SD.begin(10);
@@ -331,6 +267,72 @@ void sd_log() {
     Serial.println("Log failed");
 }
 
+void setup(){
+  
+  Serial.begin(9600);
+
+  pinMode(RFM95_RST, OUTPUT);
+  digitalWrite(RFM95_RST, HIGH);
+
+  pinMode(5, OUTPUT);
+  digitalWrite(5, LOW); // Sets pin 5, the pin with the 3.3V rail, to output and enables the rail
+  pinMode(6, OUTPUT);
+  digitalWrite(6, HIGH); // Sets pin 6, the pin with the 5V rail, to output and enables the rail
+ 
+  // LoRa: Manual reset
+  digitalWrite(RFM95_RST, LOW);
+  delay(10);
+  digitalWrite(RFM95_RST, HIGH);
+  delay(10);
+
+  while (!rf95.init()) {
+    Serial.println("LoRa radio init failed");
+    Serial.println("Uncomment '#define SERIAL_DEBUG' in RH_RF95.cpp for detailed debug info");
+    while (1);
+  }
+  Serial.println("LoRa radio init OK!");
+
+  // Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, +13dbM
+  if (!rf95.setFrequency(RF95_FREQ)) {
+    Serial.println("setFrequency failed");
+    while (1);
+  }
+  Serial.print("Set Freq to: "); Serial.println(RF95_FREQ);
+  
+  // The default transmitter power is 13dBm, using PA_BOOST.
+  // If you are using RFM95/96/97/98 modules which uses the PA_BOOST transmitter pin, then 
+  // you can set transmitter powers from 5 to 23 dBm:
+  rf95.setTxPower(23, false);
+
+  mySDI12.begin();
+  delay(500); // allow things to settle
+
+  Serial.println("Scanning all addresses, please wait...");
+  /*
+      Quickly Scan the Address Space
+   */
+
+  for(byte i = '0'; i <= '9'; i++) if(checkActive(i)) setTaken(i);   // scan address space 0-9
+
+  for(byte i = 'a'; i <= 'z'; i++) if(checkActive(i)) setTaken(i);   // scan address space a-z
+
+  for(byte i = 'A'; i <= 'Z'; i++) if(checkActive(i)) setTaken(i);   // scan address space A-Z
+
+  /*
+      See if there are any active sensors.
+   */
+  boolean found = false;
+
+  for(byte i = 0; i < 62; i++){
+    if(isTaken(i)){
+      found = true;
+      Serial.print("Found address:  ");
+      Serial.println(i);
+      break;
+    }
+  }
+}
+
 void loop(){
 
   // scan address space 0-9
@@ -351,6 +353,7 @@ void loop(){
   bme_measure();
   sd_log();
 
+  // Form URL with data
   String temp_link = "https://web.engr.oregonstate.edu/~eaglea/add_data.php?temp=" + String(temp) + "&hum=" + String(humid) + "&pr=" + String(dielectric);
   int link_len = temp_link.length() + 1;
   char converted_value[link_len];
@@ -358,9 +361,36 @@ void loop(){
 
   Serial.println(converted_value);
 
+  // Send URL through LoRa
   rf95.send((uint8_t *)converted_value, link_len);
   delay(10);
   rf95.waitPacketSent();
-  
-  delay(5000); // wait ten seconds between measurement attempts.
+
+  sleep();
+}
+
+void sleep() {
+
+  digitalWrite(5, HIGH); // Disabling all pins before going to sleep.
+  digitalWrite(6, LOW);
+  pinMode(23, INPUT);    // Disables SPI communication to SD before going to sleep
+  pinMode(24, INPUT);
+  pinMode(10, INPUT);
+
+  pinMode(DATAPIN, INPUT);
+
+  for (int i = 0; i < SLEEP_TIMER; i++) {
+    delay(60000);
+    Serial.println("Minutes passed: " + String(i+1));
+  }
+
+  digitalWrite(5, LOW); // Enabling all pins after wake up has completed.
+  digitalWrite(6, HIGH);
+  pinMode(10, OUTPUT);  // Enables SPI communication to SD after going to sleep
+  pinMode(23, OUTPUT);
+  pinMode(24, OUTPUT);
+
+  pinMode(DATAPIN, OUTPUT);
+
+  delay(10);
 }
