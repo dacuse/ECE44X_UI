@@ -31,7 +31,7 @@
 #define RFM95_RST 4
 #define RFM95_INT 3
 
-#define SLEEP_TIMER 15      // How long system should sleep in minutes
+#define SLEEP_TIMER 1      // How long system should sleep in minutes
 
 SDI12 mySDI12(DATAPIN);
 
@@ -303,6 +303,9 @@ void setup(){
   // If you are using RFM95/96/97/98 modules which uses the PA_BOOST transmitter pin, then 
   // you can set transmitter powers from 5 to 23 dBm:
   rf95.setTxPower(23, false);
+  rf95.setSignalBandwidth(125000);
+  rf95.setSpreadingFactor(10); 
+  rf95.setCodingRate4(8);
 
   mySDI12.begin();
   delay(500); // allow things to settle
@@ -373,6 +376,7 @@ void sleep() {
 
   digitalWrite(5, HIGH); // Disabling all pins before going to sleep.
   digitalWrite(6, LOW);
+  digitalWrite(13, LOW);
   pinMode(23, INPUT);    // Disables SPI communication to SD before going to sleep
   pinMode(24, INPUT);
   pinMode(10, INPUT);
@@ -380,7 +384,8 @@ void sleep() {
   pinMode(DATAPIN, INPUT);
 
   for (int i = 0; i < SLEEP_TIMER; i++) {
-    delay(60000);
+    //delay(60000);
+    delay(10000);
     Serial.println("Minutes passed: " + String(i+1));
   }
 
@@ -389,6 +394,7 @@ void sleep() {
   pinMode(10, OUTPUT);  // Enables SPI communication to SD after going to sleep
   pinMode(23, OUTPUT);
   pinMode(24, OUTPUT);
+  digitalWrite(13, HIGH);
 
   pinMode(DATAPIN, OUTPUT);
 

@@ -80,6 +80,9 @@ void setup() {
 
   // Setting LoRa settings
   rf95.setTxPower(23, false);
+  rf95.setSignalBandwidth(125000);
+  rf95.setSpreadingFactor(10); 
+  rf95.setCodingRate4(8);
 }
 
 void loop() {
