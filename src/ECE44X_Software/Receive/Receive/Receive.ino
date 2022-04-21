@@ -117,6 +117,7 @@ void loop() {
     uint8_t len = sizeof(buf);
 
     if (rf95.recv(buf, &len)) {
+        // Print URL and set a new alarm
         Serial.println((char*)buf);
         alarmSet();
     }
@@ -125,11 +126,10 @@ void loop() {
   if(rtc.alarmFired(1)) {
 
       // Print statement for error
-      //Serial.println("https://web.engr.oregonstate.edu/~eaglea/add_data.php?temp=00&hum=00&pr=00");
-    
-      rtc.clearAlarm(1);
-      Serial.println("Alarm cleared");
+      Serial.println("Error");
 
+      // Clear alarm and set a new one
+      rtc.clearAlarm(1);
       alarmSet();
       
   }
