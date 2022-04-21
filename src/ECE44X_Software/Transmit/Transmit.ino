@@ -13,6 +13,9 @@
 #include <SD.h>
 #include <SPI.h>
 
+// RTC library
+#include "RTClib.h"
+
 // LoRa libraries
 #include <RH_RF95.h>  
 
@@ -31,17 +34,17 @@
 #define RFM95_RST 4
 #define RFM95_INT 3
 
-#define SLEEP_TIMER 1      // How long system should sleep in minutes
+#define RF95_FREQ 915.0
 
-SDI12 mySDI12(DATAPIN);
+#define SLEEP_TIMER 15      // How long system should sleep in minutes
 
 int packet = 1;
 float dielectric, temp, humid;
 
-Adafruit_BME280 bme; // I2C
-File myFile;
-
-#define RF95_FREQ 915.0
+// Sensor objects
+SDI12 mySDI12(DATAPIN);
+Adafruit_BME280 bme; // BME280 Temp Sensor
+File myFile;         // SD
 
 // Singleton instance of the radio driver
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
@@ -271,15 +274,20 @@ void setup(){
   
   Serial.begin(9600);
 
+  // Pin configuration
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, HIGH); // Show we're awake
+
   pinMode(RFM95_RST, OUTPUT);
   digitalWrite(RFM95_RST, HIGH);
 
+  // Hypnos power up: https://github.com/OPEnSLab-OSU/OPEnS-Lab-Home/wiki/Hypnos
   pinMode(5, OUTPUT);
   digitalWrite(5, LOW); // Sets pin 5, the pin with the 3.3V rail, to output and enables the rail
   pinMode(6, OUTPUT);
   digitalWrite(6, HIGH); // Sets pin 6, the pin with the 5V rail, to output and enables the rail
  
-  // LoRa: Manual reset
+  // LoRa: Manual reset and setup
   digitalWrite(RFM95_RST, LOW);
   delay(10);
   digitalWrite(RFM95_RST, HIGH);
@@ -299,31 +307,26 @@ void setup(){
   }
   Serial.print("Set Freq to: "); Serial.println(RF95_FREQ);
   
-  // The default transmitter power is 13dBm, using PA_BOOST.
-  // If you are using RFM95/96/97/98 modules which uses the PA_BOOST transmitter pin, then 
-  // you can set transmitter powers from 5 to 23 dBm:
-  rf95.setTxPower(23, false);
-  rf95.setSignalBandwidth(125000);
-  rf95.setSpreadingFactor(10); 
-  rf95.setCodingRate4(8);
+  rf95.setTxPower(23, false);        // Full power
+  rf95.setSignalBandwidth(125000);   // Bandwidth = 125kHz
+  rf95.setSpreadingFactor(10);       // Spreading factor 2^10 = 1024
+  rf95.setCodingRate4(8);            // Coding rate: 4/8
 
+  // Teros setup
   mySDI12.begin();
   delay(500); // allow things to settle
 
   Serial.println("Scanning all addresses, please wait...");
-  /*
-      Quickly Scan the Address Space
-   */
-
+      
+  // Quickly Scan the Address Space
   for(byte i = '0'; i <= '9'; i++) if(checkActive(i)) setTaken(i);   // scan address space 0-9
 
   for(byte i = 'a'; i <= 'z'; i++) if(checkActive(i)) setTaken(i);   // scan address space a-z
 
   for(byte i = 'A'; i <= 'Z'; i++) if(checkActive(i)) setTaken(i);   // scan address space A-Z
 
-  /*
-      See if there are any active sensors.
-   */
+  // See if there are any active sensors
+  
   boolean found = false;
 
   for(byte i = 0; i < 62; i++){
@@ -338,17 +341,17 @@ void setup(){
 
 void loop(){
 
-  // scan address space 0-9
+  // Scan address space 0-9
   for(char i = '0'; i <= '9'; i++) if(isTaken(i)){
     takeMeasurement(i);
   }
 
-  // scan address space a-z
+  // Scan address space a-z
   for(char i = 'a'; i <= 'z'; i++) if(isTaken(i)){
     takeMeasurement(i);
   }
 
-  // scan address space A-Z
+  // Scan address space A-Z
   for(char i = 'A'; i <= 'Z'; i++) if(isTaken(i)){
     takeMeasurement(i);
   };
@@ -376,16 +379,16 @@ void sleep() {
 
   digitalWrite(5, HIGH); // Disabling all pins before going to sleep.
   digitalWrite(6, LOW);
-  digitalWrite(13, LOW);
+  digitalWrite(LED_BUILTIN, LOW); // Show we're asleep
   pinMode(23, INPUT);    // Disables SPI communication to SD before going to sleep
   pinMode(24, INPUT);
   pinMode(10, INPUT);
 
   pinMode(DATAPIN, INPUT);
 
+  // TODO: Implement a better method for sleep
   for (int i = 0; i < SLEEP_TIMER; i++) {
-    //delay(60000);
-    delay(10000);
+    delay(60000);
     Serial.println("Minutes passed: " + String(i+1));
   }
 
@@ -394,7 +397,7 @@ void sleep() {
   pinMode(10, OUTPUT);  // Enables SPI communication to SD after going to sleep
   pinMode(23, OUTPUT);
   pinMode(24, OUTPUT);
-  digitalWrite(13, HIGH);
+  digitalWrite(LED_BUILTIN, HIGH); // Show we're awake again
 
   pinMode(DATAPIN, OUTPUT);
 
