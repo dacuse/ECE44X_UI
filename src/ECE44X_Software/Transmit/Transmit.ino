@@ -38,6 +38,7 @@
 
 #define SLEEP_TIMER 15      // How long system should sleep in minutes
 
+// Sensor values
 int packet = 1;
 float dielectric, temp, humid;
 
@@ -164,7 +165,7 @@ void takeMeasurement(char i){
   mySDI12.clearBuffer();
 }
 
-// this checks for activity at a particular address
+// This checks for activity at a particular address
 // expects a char, '0'-'9', 'a'-'z', or 'A'-'Z'
 boolean checkActive(char i){
 
@@ -188,7 +189,7 @@ boolean checkActive(char i){
   return false;
 }
 
-// this quickly checks if the address has already been taken by an active sensor
+// This quickly checks if the address has already been taken by an active sensor
 boolean isTaken(byte i){
   i = charToDec(i); // e.g. convert '0' to 0, 'a' to 10, 'Z' to 61.
   byte j = i / 8;   // byte #
@@ -225,6 +226,7 @@ void bme_measure() {
   
 }
 
+// Log data to SD card
 void sd_log() {
 
     SD.begin(10);
@@ -307,6 +309,7 @@ void setup(){
   }
   Serial.print("Set Freq to: "); Serial.println(RF95_FREQ);
   
+  // After testing, using these values optimizes range over speed for LoRa transmission
   rf95.setTxPower(23, false);        // Full power
   rf95.setSignalBandwidth(125000);   // Bandwidth = 125kHz
   rf95.setSpreadingFactor(10);       // Spreading factor 2^10 = 1024
@@ -375,6 +378,7 @@ void loop(){
   sleep();
 }
 
+// Powers off the system for user specified number of time
 void sleep() {
 
   digitalWrite(5, HIGH); // Disabling all pins before going to sleep.

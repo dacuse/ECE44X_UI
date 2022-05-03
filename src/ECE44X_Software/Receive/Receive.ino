@@ -23,21 +23,22 @@ RTC_DS3231 rtc;
 
 #define CLOCK_INTERRUPT_PIN 12
 
+// Show that the alarm has triggered
 void onAlarm() {
     Serial.println("Alarm occured!");
 }
 
+// Setting the alarm to countdown until next packet, otherwise it will send an error message
 void alarmSet() {
 
-    // schedule an alarm 10 seconds in the future
+    // schedule an alarm 15 minutes and 2 seconds in the future
     if(!rtc.setAlarm1(
-            //rtc.now() + TimeSpan(10),
             rtc.now() + TimeSpan(0, 0, 15, 2),
             DS3231_A1_Minute // this mode triggers the alarm when the seconds match. See Doxygen for other options
     )) {
         Serial.println("Error, alarm wasn't set!");
     }else {
-        Serial.println("Alarm will happen in 1 minute and 2 seconds!");  
+        Serial.println("Alarm will happen in 15 minutes and 2 seconds!");  
     }
   
 }
@@ -102,7 +103,7 @@ void setup() {
   }
   Serial.print("Set Freq to: "); Serial.println(RF95_FREQ);
 
-  // Setting LoRa settings
+  // After testing, these LoRa settings were found to work the best for longer distance but slower transmission rates 
   rf95.setTxPower(23, false);        // Full power
   rf95.setSignalBandwidth(125000);   // Bandwidth = 125kHz
   rf95.setSpreadingFactor(10);       // Spreading factor 2^10 = 1024
@@ -113,8 +114,8 @@ void loop() {
   
   if (rf95.available()) {
     // Should be a message for us now
-    uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
-    uint8_t len = sizeof(buf);
+    uint8_t buf[RH_RF95_MAX_MESSAGE_LEN]; // Message
+    uint8_t len = sizeof(buf);            // Length of message
 
     if (rf95.recv(buf, &len)) {
         // Print URL and set a new alarm
