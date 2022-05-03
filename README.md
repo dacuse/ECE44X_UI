@@ -33,4 +33,4 @@ Any collected data will be stored and charted on our [website](https://web.engr.
 As stated before, 4G capabilities would be added to a future iteration of the system. This would remove the necessity of having a computer with internet connection on standby. Another improvement for the system would be to add a power button on the outside of the case so users would not need to unscrew the lid to power the system. The last known improvement of the system would be to add a sensor to read water levels of the surrounding area. This could be a simple sensor that reads the water level and if it reaches a certain threshold, it triggers an interrupt. 
 
 ## Questions?
-Email one of the [project members](https://github.com/BGoto808/ECE44X_Integrated_Sensor_22/edit/main/README.md#ece44x-senior-capstone-project-21-22-integrated-environmental-sensor) to learn more about the project!
+Email one of the [project members](https://github.com/BGoto808/ECE44X_Integrated_Sensor_22/edit/main/README.md#oregon-state-university-ece-senior-capstone-integrated-environmental-sensor-for-thai-agriculture-application) to learn more about the project!
