@@ -1,5 +1,5 @@
-# Oregon State University ECE Senior Capstone (Group 19): Integrated Environmental Sensor for Thai Agriculture Application
-## ECE44X Senior Capstone Project 21-22': Integrated Environmental Sensor
+
+## Oregon State University ECE Senior Capstone: Integrated Environmental Sensor for Thai Agriculture Application
 Project Members: [Aspen Eagle](eaglea@oregonstate.edu), [Samantha Arroyo](arroyovs@oregonstate.edu), [Shelby Westerberg](westerbs@oregonstate.edu), [Bryson Goto](gotob@oregonstate.edu)
 
 <p align="center">
