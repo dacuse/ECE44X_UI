@@ -2,6 +2,8 @@
 ## ECE44X Senior Capstone Project 21-22': Integrated Environmental Sensor
 Project Members: [Aspen Eagle](eaglea@oregonstate.edu), [Samantha Arroyo](arroyovs@oregonstate.edu), [Shelby Westerberg](westerbs@oregonstate.edu), [Bryson Goto](gotob@oregonstate.edu)
 
+<a href="https://ibb.co/ysqjFd9"><img src="https://i.ibb.co/vzkn4VF/20220429-170130.jpg" alt="20220429-170130" border="0"></a>
+
 ## Purpose
 The goal of this project is to create an environmental sensing package that automatically took temperature, humidity, and soil moisture measurements of our stakeholder's farm in Thailand and transmitted said data to an online database where it could be automatically processed and graphed. Since these measurements are collected automatically, the farmer can then spend their efforts on more advanced tasks while the system handles the redundant, menial ones. While the system only collects 3 types of data, the future versions may include more environmental data measurements as well as 4G capabilities so that publishing the data does not require a computer with internet connection. 
 
