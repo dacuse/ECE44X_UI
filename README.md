@@ -26,9 +26,9 @@ The software can be divided into three programs: the receiver, the node, as well
 Any collected data will be stored and charted on our [website](https://web.engr.oregonstate.edu/~eaglea/sensordata.php). The website allows the user to adjust the time to look for data in a certain time interval. With the chart, you may hover over any part of the data and see the value at that given time. In the chart below, we ran the system to test how long the battery would last. The first part of the graph is through earlier tests with no testing setup so the data is dummy values. At around May 1, 3:03PM, the system was powered on to track battery life without solar power. The system was able to last 12 hours without solar power without a fully charged battery. 
 
 <p align="center">
- <img  src="https://i.ibb.co/3pCkp2z/data.png" width="550">   
+<a href="https://ibb.co/HxVFk7z"><img src="https://i.ibb.co/4Y7m5WT/download.png" alt="download" border="0"></a>
 </p>
-
+ 
 ## Future
 As stated before, 4G capabilities would be added to a future iteration of the system. This would remove the necessity of having a computer with internet connection on standby. Another improvement for the system would be to add a power button on the outside of the case so users would not need to unscrew the lid to power the system. The last known improvement of the system would be to add a sensor to read water levels of the surrounding area. This could be a simple sensor that reads the water level and if it reaches a certain threshold, it triggers an interrupt. 
 
