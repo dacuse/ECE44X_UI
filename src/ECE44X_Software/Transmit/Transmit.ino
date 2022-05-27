@@ -36,6 +36,10 @@
 
 #define RF95_FREQ 915.0
 
+// Hypnos power pins
+#define HYPNOS3V3 5
+#define HYPNOS5   6
+
 #define SLEEP_TIMER 15      // How long system should sleep in minutes
 
 // Sensor values
@@ -49,6 +53,8 @@ File myFile;         // SD
 
 // Singleton instance of the radio driver
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
+
+// ************** TEROS SOIL SENSOR FUNCTIONS *******************
 
 // Keeps track of active addresses each bit represents an address:
 // 1 is active (taken), 0 is inactive (available)
@@ -208,7 +214,8 @@ boolean setTaken(byte i){
   return !initStatus; // return false if already taken
 }
 
-// BME280 measurement function
+// ******************** BME280 SENSOR FUNCTIONS ********************
+// Take BME280 temperature / humidity sensor measurements
 void bme_measure() {
 
     bme.begin(0x76);
@@ -226,6 +233,7 @@ void bme_measure() {
   
 }
 
+// ************************ SD FUNCTION *****************************
 // Log data to SD card
 void sd_log() {
 
@@ -284,10 +292,10 @@ void setup(){
   digitalWrite(RFM95_RST, HIGH);
 
   // Hypnos power up: https://github.com/OPEnSLab-OSU/OPEnS-Lab-Home/wiki/Hypnos
-  pinMode(5, OUTPUT);
-  digitalWrite(5, LOW); // Sets pin 5, the pin with the 3.3V rail, to output and enables the rail
-  pinMode(6, OUTPUT);
-  digitalWrite(6, HIGH); // Sets pin 6, the pin with the 5V rail, to output and enables the rail
+  pinMode(HYPNOS3V3, OUTPUT);
+  digitalWrite(HYPNOS3V3, LOW); // Sets pin 5, the pin with the 3.3V rail, to output and enables the rail
+  pinMode(HYPNOS5, OUTPUT);
+  digitalWrite(HYPNOS5, HIGH); // Sets pin 6, the pin with the 5V rail, to output and enables the rail
  
   // LoRa: Manual reset and setup
   digitalWrite(RFM95_RST, LOW);
@@ -381,8 +389,8 @@ void loop(){
 // Powers off the system for user specified number of time
 void sleep() {
 
-  digitalWrite(5, HIGH); // Disabling all pins before going to sleep.
-  digitalWrite(6, LOW);
+  digitalWrite(HYPNOS3V3, HIGH); // Disabling all pins before going to sleep.
+  digitalWrite(HYPNOS5, LOW);
   digitalWrite(LED_BUILTIN, LOW); // Show we're asleep
   pinMode(23, INPUT);    // Disables SPI communication to SD before going to sleep
   pinMode(24, INPUT);
@@ -396,8 +404,8 @@ void sleep() {
     Serial.println("Minutes passed: " + String(i+1));
   }
 
-  digitalWrite(5, LOW); // Enabling all pins after wake up has completed.
-  digitalWrite(6, HIGH);
+  digitalWrite(HYPNOS3V3, LOW); // Enabling all pins after wake up has completed.
+  digitalWrite(HYPNOS5, HIGH);
   pinMode(10, OUTPUT);  // Enables SPI communication to SD after going to sleep
   pinMode(23, OUTPUT);
   pinMode(24, OUTPUT);
