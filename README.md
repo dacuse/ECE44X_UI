@@ -1,6 +1,6 @@
 
 ## Oregon State University ECE Senior Capstone: Integrated Environmental Sensor for Thai Agriculture Application
-Project Members: Aspen Eagle (eaglea@oregonstate.edu), Samantha Arroyo (arroyovs@oregonstate.edu), Shelby Westerberg (westerbs@oregonstate.edu), Bryson Goto (gotob@oregonstate.edu)
+Project Members: Blake Garcia (garciabl@oregonstate.edu), Emma Dacus (dacuse@oregonstate.edu), Garren Dutto (duttog@oregonstate.edu), Grace Mackey (mackeyg@oregonstate.edu)
 
 <p align="center">
  <img  src="https://i.ibb.co/vzkn4VF/20220429-170130.jpg" width="550">   
